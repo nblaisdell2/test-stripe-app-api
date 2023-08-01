@@ -15,10 +15,7 @@ const app: Express = express();
 app.use(urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://k4rq2ous7k.execute-api.us-east-1.amazonaws.com/dev",
-    ],
+    origin: ["http://localhost:3000", "https://teststripe.testapisite.net"],
   })
 );
 
