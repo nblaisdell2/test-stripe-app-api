@@ -1,17 +1,28 @@
 import express, { json, urlencoded } from "express";
 import type { Express, Request, Response, NextFunction } from "express";
 import createError, { HttpError } from "http-errors";
+import cors from "cors";
 
 import indexRouter from "./routes/index";
+import stripeRouter from "./routes/stripe";
+import stripeWebhookRouter from "./routes/stripe-webhook";
+
+import { config } from "dotenv";
+config();
 
 const app: Express = express();
 
+app.use(urlencoded({ extended: false }));
+app.use(cors());
+
+app.use("/stripe-webhook", stripeWebhookRouter);
+
 // Makes sure our API can only accept URL-encoded strings, or JSON data
 app.use(json());
-app.use(urlencoded({ extended: false }));
 
 // Define our endpoints (routers) that are made available for our API
 app.use("/", indexRouter);
+app.use("/stripe", stripeRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
