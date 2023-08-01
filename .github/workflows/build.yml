@@ -31,6 +31,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+      - name: Populate Environment Variables
+        run: |
+          touch .env
+          echo DB_HOST=${{ secrets.ENV_DB_HOST }} >> .env
+          echo DB_USER=${{ secrets.ENV_DB_USER }} >> .env
+          echo DB_PWD=${{ secrets.ENV_DB_PWD }} >> .env
+          echo DB_NAME=${{ secrets.ENV_DB_NAME }} >> .env
+          echo BASE_CLIENT_URL=${{ secrets.ENV_BASE_CLIENT_URL }} >> .env
+          echo STRIPE_SUBSCRIPTION_PRODUCT_ID=${{ secrets.ENV_STRIPE_SUBSCRIPTION_PRODUCT_ID }} >> .env
+          echo STRIPE_WEBHOOK_SECRET=${{ secrets.ENV_STRIPE_WEBHOOK_SECRET }} >> .env
+          echo STRIPE_API_SECRET_KEY=${{ secrets.ENV_STRIPE_API_SECRET_KEY }} >> .env
+          cat .env
       - name: Install Dependencies
         run: npm ci
       - name: Build the Application
