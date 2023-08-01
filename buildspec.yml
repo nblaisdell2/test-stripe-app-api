@@ -17,7 +17,7 @@ phases:
       - echo "Creating new Lambda version..."
       - aws lambda update-function-code --region $awsRegion --function-name $dockerContainerName --image-uri $awsAccountID.dkr.ecr.$awsRegion.amazonaws.com/$dockerContainerName:latest
       - sleep 20
-      - 'aws lambda update-function-configuration --function-name test-stripe-app-api --environment ''{ "Variables": { "DB_HOST": "sql-server-db-1.ctm8otgitadb.us-east-1.rds.amazonaws.com", "DB_USER": "admin", "DB_PWD": "FG2xnEcDpC8kNLbAfLUw", "DB_NAME": "TestStripe", "BASE_CLIENT_URL": "https://teststripe.testapisite.net", "STRIPE_SUBSCRIPTION_PRODUCT_ID": "prod_OMN3dLFYDmR0Dq", "STRIPE_WEBHOOK_SECRET": "whsec_c151fde09419a4f384d96eeda371279883b77db373c1ef3e7950e86b98b63222", "STRIPE_API_SECRET_KEY": "sk_test_51NZauGIJJf7l1lt3DtKm3TRFuihSjuz6li4w3zKfrD7ELZsI9OIrdBE36uQY9A6kBivd46dhEnWUZT8cX9XVukiJ00rgNOJW03" } }'''
+      - 'aws lambda update-function-configuration --function-name test-stripe-app-api --environment ''{ "Variables": { "DB_HOST": "sql-server-db-1.ctm8otgitadb.us-east-1.rds.amazonaws.com", "DB_USER": "admin", "DB_PWD": "FG2xnEcDpC8kNLbAfLUw", "DB_NAME": "TestStripe", "BASE_CLIENT_URL": "https://teststripe.testapisite.net", "STRIPE_SUBSCRIPTION_PRODUCT_ID": "prod_OMN3dLFYDmR0Dq", "STRIPE_WEBHOOK_SECRET": "whsec_p4wYQFgPH1ZXDh23OQgMiVIc7C7Dv5WH", "STRIPE_API_SECRET_KEY": "sk_test_51NZauGIJJf7l1lt3DtKm3TRFuihSjuz6li4w3zKfrD7ELZsI9OIrdBE36uQY9A6kBivd46dhEnWUZT8cX9XVukiJ00rgNOJW03" } }'''
       - sleep 10
       - aws lambda publish-version --function-name $dockerContainerName
       - echo "Deploying new Lambda function version"
