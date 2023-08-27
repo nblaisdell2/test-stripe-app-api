@@ -1,5 +1,10 @@
 import express, { Router } from "express";
-import { getAPIStatus, getUser, saveCount } from "../controllers/index";
+import {
+  getAPIStatus,
+  getUser,
+  saveCount,
+  saveCountError,
+} from "../controllers/index";
 
 const router: Router = express.Router();
 
@@ -7,5 +12,6 @@ const router: Router = express.Router();
 router.route("/status").get(getAPIStatus);
 router.route("/user").get(getUser);
 router.route("/save-count").post(saveCount);
+router.route("/save-count-error").post(saveCountError);
 
 export default router;

@@ -41,8 +41,6 @@ export const saveCount = async function (
   console.log("ID passed in:", req.body.UserID);
   console.log("NewCount passed in:", req.body.NewCount);
 
-  // return res.status(500).json({ error: "Test Error" });
-
   await execute(req, "sp_UpdateCount", [
     {
       name: "UserID",
@@ -55,4 +53,15 @@ export const saveCount = async function (
   ]);
 
   res.status(200).json(req.body.NewCount);
+};
+
+export const saveCountError = async function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  console.log("ID passed in:", req.body.UserID);
+  console.log("NewCount passed in:", req.body.NewCount);
+
+  return res.status(500).json({ error: "Test Error" });
 };
