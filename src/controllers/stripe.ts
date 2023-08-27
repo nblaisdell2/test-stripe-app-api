@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { execute } from "../utils/sql";
+
 import { Stripe } from "stripe";
 import { buffer } from "stream/consumers";
 
@@ -8,23 +10,6 @@ config();
 const stripe = new Stripe(process.env.STRIPE_API_SECRET_KEY as string, {
   apiVersion: "2022-11-15",
 });
-
-import sql from "mssql";
-const sqlConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PWD,
-  database: process.env.DB_NAME,
-  server: process.env.DB_HOST as string,
-  pool: {
-    max: 10,
-    min: 0,
-    idleTimeoutMillis: 30000,
-  },
-  options: {
-    encrypt: false, // for azure
-    trustServerCertificate: true, // change to true for local dev / self-signed certs
-  },
-};
 
 type Highlight = {
   isHighlighted: boolean;
@@ -138,9 +123,6 @@ export const createPortalSession = async function (
   res.status(200).json({ sessionURL: portalSession.url });
 };
 
-// This is your Stripe CLI webhook secret for testing your endpoint locally.
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET as string;
-
 export const webhook = async function (
   req: Request,
   res: Response,
@@ -152,7 +134,11 @@ export const webhook = async function (
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(buf, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(
+      buf,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET as string
+    );
   } catch (err) {
     console.log(`Webhook Error: ${err}`);
     res.status(400).send(`Webhook Error: ${err}`);
@@ -163,79 +149,28 @@ export const webhook = async function (
   console.log("INCOMING EVENT: ", event.type);
 
   switch (event.type) {
-    case "payment_intent.succeeded":
-      const paymentIntentSucceeded = event.data.object;
-      // Then define and call a function to handle the event payment_intent.succeeded
-      break;
     case "customer.created": {
       const customerCreatedData: any = event.data.object;
       console.log(customerCreatedData);
 
-      let pool = await sql.connect(sqlConfig);
-      let result2 = await pool
-        .request()
-        .input("UserEmail", sql.VarChar(255), customerCreatedData?.email)
-        .input("StripeCustomerID", sql.VarChar(255), customerCreatedData?.id)
-
-        .execute("sp_UpdateStripeCustomerID");
-
-      // Then define and call a function to handle the event payment_intent.succeeded
+      await execute(req, "sp_UpdateStripeCustomerID", [
+        { name: "UserEmail", value: customerCreatedData?.email },
+        { name: "StripeCustomerID", value: customerCreatedData?.id },
+      ]);
       break;
     }
-    case "payment_method.attached":
-      const paymentMethodAttached = event.data.object;
-      console.log(paymentMethodAttached);
-      // Then define and call a function to handle the event payment_intent.succeeded
-      break;
-    // case "customer.subscription.created": {
-    //   const SubscriptionCreated: any = event.data.object;
-    //   console.log(SubscriptionCreated);
-
-    //   let pool = await sql.connect(sqlConfig);
-    //   let result2 = await pool
-    //     .request()
-    //     .input(
-    //       "StripeCustomerID",
-    //       sql.VarChar(255),
-    //       SubscriptionCreated?.customer
-    //     )
-    //     .input("SubscriptionID", sql.VarChar(255), SubscriptionCreated?.id)
-    //     .input("NewStatus", sql.VarChar(255), "Active")
-    //     .input("IsInTrial", sql.Bit, true)
-    //     .input(
-    //       "SubStartDate",
-    //       sql.VarChar(255),
-    //       new Date(
-    //         SubscriptionCreated?.current_period_start * 1000
-    //       ).toISOString()
-    //     )
-    //     .input(
-    //       "SubEndDate",
-    //       sql.VarChar(255),
-    //       new Date(SubscriptionCreated?.current_period_end * 1000).toISOString()
-    //     )
-    //     .execute("sp_UpdateSubscription");
-    //   // Then define and call a function to handle the event payment_intent.succeeded
-    //   break;
-    // }
     case "customer.subscription.deleted": {
       const SubscriptionDeleted: any = event.data.object;
       console.log(SubscriptionDeleted);
 
-      let pool = await sql.connect(sqlConfig);
-      let result2 = await pool
-        .request()
-        .input(
-          "StripeCustomerID",
-          sql.VarChar(255),
-          SubscriptionDeleted?.customer
-        )
-        .input("SubscriptionID", sql.VarChar(255), SubscriptionDeleted?.id)
-        .input("NewStatus", sql.VarChar(255), "Inactive")
-        .input("IsInTrial", sql.Bit, false)
-        .input("SubStartDate", sql.VarChar(255), null)
-        .input("SubEndDate", sql.VarChar(255), null)
-        .execute("sp_UpdateSubscription");
+      await execute(req, "sp_UpdateSubscription", [
+        { name: "StripeCustomerID", value: SubscriptionDeleted?.customer },
+        { name: "SubscriptionID", value: SubscriptionDeleted?.id },
+        { name: "NewStatus", value: "Inactive" },
+        { name: "IsInTrial", value: false },
+        { name: "SubStartDate", value: null },
+        { name: "SubEndDate", value: null },
+      ]);
 
       break;
     }
@@ -243,34 +178,27 @@ export const webhook = async function (
       const SubscriptionUpdated: any = event.data.object;
       console.log(SubscriptionUpdated);
 
-      let pool = await sql.connect(sqlConfig);
-      let result2 = await pool
-        .request()
-        .input(
-          "StripeCustomerID",
-          sql.VarChar(255),
-          SubscriptionUpdated?.customer
-        )
-        .input("SubscriptionID", sql.VarChar(255), SubscriptionUpdated?.id)
-        .input("NewStatus", sql.VarChar(255), "Active")
-        .input("IsInTrial", sql.Bit, true)
-        .input(
-          "SubStartDate",
-          sql.VarChar(255),
-          new Date(
+      await execute(req, "sp_UpdateSubscription", [
+        { name: "StripeCustomerID", value: SubscriptionUpdated?.customer },
+        { name: "SubscriptionID", value: SubscriptionUpdated?.id },
+        { name: "NewStatus", value: "Active" },
+        { name: "IsInTrial", value: true },
+        {
+          name: "SubStartDate",
+          value: new Date(
             SubscriptionUpdated?.current_period_start * 1000
-          ).toISOString()
-        )
-        .input(
-          "SubEndDate",
-          sql.VarChar(255),
-          new Date(SubscriptionUpdated?.current_period_end * 1000).toISOString()
-        )
-        .execute("sp_UpdateSubscription");
-      // Then define and call a function to handle the event payment_intent.succeeded
+          ).toISOString(),
+        },
+        {
+          name: "SubEndDate",
+          value: new Date(
+            SubscriptionUpdated?.current_period_end * 1000
+          ).toISOString(),
+        },
+      ]);
+
       break;
     }
-    // ... handle other event types
     default:
     //   console.log(`Unhandled event type ${event.type}`);
   }

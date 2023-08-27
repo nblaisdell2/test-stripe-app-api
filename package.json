@@ -15,6 +15,7 @@
     "@types/http-errors": "^2.0.1",
     "@types/jest": "^29.5.2",
     "@types/node": "^18.15.3",
+    "@types/stripe": "^8.0.417",
     "@types/supertest": "^2.0.12",
     "aws-serverless-express": "^3.4.0",
     "concurrently": "^7.6.0",

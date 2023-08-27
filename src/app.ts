@@ -7,6 +7,8 @@ import indexRouter from "./routes/index";
 import stripeRouter from "./routes/stripe";
 import stripeWebhookRouter from "./routes/stripe-webhook";
 
+import { createSharedConnectionPool } from "./utils/sql";
+
 import { config } from "dotenv";
 config();
 
@@ -27,6 +29,11 @@ app.use(json());
 // Define our endpoints (routers) that are made available for our API
 app.use("/", indexRouter);
 app.use("/stripe", stripeRouter);
+
+// Create a "shared" lobal connection pool for SQL Server queries
+createSharedConnectionPool().then((pool) => {
+  app.locals.db = pool;
+});
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
