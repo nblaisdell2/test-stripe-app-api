@@ -122,7 +122,7 @@ else
   echo "All secrets"
   echo "$ALLMYSECRETS"
 
-  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": $ALLMYSECRETS }
+  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": "$ALLMYSECRETS" }
 fi
 
 rm aws.json
