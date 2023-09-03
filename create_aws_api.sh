@@ -128,7 +128,7 @@ else
   do 
     item=$(echo "${i/ENV_/""}")
     echo $item
-    items+=$item
+    items+="$item"
   done
   items+="}"
 
