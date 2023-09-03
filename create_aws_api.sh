@@ -12,6 +12,8 @@ awsAPIGatewayName=$3
 awsAPIGatewayDesc="$3 Description"
 awsLambdaVariables=$6
 
+echo $awsLambdaVariables
+
 # TODO: Add better logging to script
 
 
