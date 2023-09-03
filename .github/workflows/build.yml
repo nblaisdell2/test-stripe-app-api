@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - name: Testing Secrets
+      - name: Loading Environment Variables from GH Secrets
         run: |
           touch .env
 
@@ -57,22 +57,22 @@ jobs:
       #     echo STRIPE_WEBHOOK_SECRET=${{ secrets.ENV_STRIPE_WEBHOOK_SECRET }} >> .env
       #     echo STRIPE_API_SECRET_KEY=${{ secrets.ENV_STRIPE_API_SECRET_KEY }} >> .env
       #     cat .env
-      # - name: Install Dependencies
-      #   run: npm ci
-      # - name: Build the Application
-      #   run: npm run build --if-present
-      # - name: Test the Application
-      #   run: npm test
-      # - name: Check needed values
-      #   run: bash check_github_secrets.sh ${{ secrets.AWS_REGION || 'none' }} ${{ secrets.AWS_ACCOUNT_ID || 'none' }} ${{ secrets.AWS_LAMBDA_EXEC_ARN || 'none' }} ${{ secrets.AWS_GHACTIONS_ROLENAME || 'none' }}
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v2
-      #   with:
-      #     role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_GHACTIONS_ROLENAME }}
-      #     aws-region: ${{ secrets.AWS_REGION }}
-      # - name: Create AWS Infrastructure
-      #   run: bash create_aws_api.sh ${{ secrets.AWS_ACCOUNT_ID }} ${{ secrets.AWS_REGION }} ${{ github.event.repository.name }} ${{ secrets.AWS_LAMBDA_EXEC_ARN }} ${{github.event.repository.clone_url }}
-      # - name: Running AWS CodeBuild
-      #   uses: aws-actions/aws-codebuild-run-build@v1.0.12
-      #   with:
-      #     project-name: ${{ github.event.repository.name }}
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build the Application
+        run: npm run build --if-present
+      - name: Test the Application
+        run: npm test
+      - name: Check needed values
+        run: bash check_github_secrets.sh ${{ secrets.AWS_REGION || 'none' }} ${{ secrets.AWS_ACCOUNT_ID || 'none' }} ${{ secrets.AWS_LAMBDA_EXEC_ARN || 'none' }} ${{ secrets.AWS_GHACTIONS_ROLENAME || 'none' }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_GHACTIONS_ROLENAME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Create AWS Infrastructure
+        run: bash create_aws_api.sh ${{ secrets.AWS_ACCOUNT_ID }} ${{ secrets.AWS_REGION }} ${{ github.event.repository.name }} ${{ secrets.AWS_LAMBDA_EXEC_ARN }} ${{github.event.repository.clone_url }}
+      - name: Running AWS CodeBuild
+        uses: aws-actions/aws-codebuild-run-build@v1.0.12
+        with:
+          project-name: ${{ github.event.repository.name }}
