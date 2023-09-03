@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -xe
-
 awsAccountID=$1
 awsRegion=$2
 awsECRRepoName=$3
