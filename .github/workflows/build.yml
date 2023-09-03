@@ -33,13 +33,11 @@ jobs:
           cache: "npm"
       - name: Testing Secrets
         run: |
-          jq --help
           echo "$ALLMYSECRETS"
-          echo "$ALLMYVARS"
+          echo "$ALLMYSECRETS" | jq -r .
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
-          ALLMYVARS: ${{ toJSON(vars) }}
       # - name: Populate Environment Variables
       #   run: |
       #     touch .env
