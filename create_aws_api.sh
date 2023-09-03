@@ -124,7 +124,19 @@ else
   echo "All secrets"
   echo "$ALLMYSECRETS"
 
-  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": "$ALLMYSECRETS" }
+  items="{"
+  echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)' |
+  while read i; 
+  do 
+    echo "${i/ENV_/""}"
+    items+="${i/ENV_/""}"
+  done
+  items+="}"
+
+  echo "Items?"
+  echo $items
+
+  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": $items }
 fi
 
 rm aws.json
