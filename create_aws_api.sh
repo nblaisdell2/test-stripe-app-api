@@ -119,11 +119,7 @@ then
 else
   echo "AWS Infrastructure already created..."
 
-  echo "All secrets"
-  echo "$ALLMYSECRETS"
-
-  items="{"
-  
+  items="{"  
   while read i; 
   do 
     if [ $items == "{" ]; then
@@ -131,17 +127,11 @@ else
     else
       item=$(echo ", ${i/ENV_/""}")
     fi
-        
+
     echo $item
     items+="$item"
   done <<< $(echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)')
-
   items+="}"
-
-  echo "Items?"
-  echo $items
-
-  set -xe
 
   aws lambda update-function-configuration --function-name $dockerContainerName --environment "{ \"Variables\": $items }"
 fi
