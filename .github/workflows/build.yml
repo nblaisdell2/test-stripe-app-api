@@ -33,8 +33,10 @@ jobs:
           cache: "npm"
       - name: Testing Secrets
         run: |
-          echo "$ALLMYSECRETS"
-          echo "$ALLMYSECRETS" | jq -r '. | to_entries | .[].key' .
+          touch .env
+          echo "$ALLMYSECRETS" | jq -r 'to_entries[] | select(.key | startswith("ENV")) | "echo " + .key + "=" + .value + " >> .env"' .
+          echo "Printing Environment file"
+          cat .env
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
