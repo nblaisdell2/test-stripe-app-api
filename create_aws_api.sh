@@ -10,10 +10,6 @@ awsLambdaExecRoleArn=$4
 awsGitHubRepoURL=$5
 awsAPIGatewayName=$3
 awsAPIGatewayDesc="$3 Description"
-awsLambdaVariables=$6
-
-echo "All secrets"
-echo "$ALLMYSECRETS"
 
 # TODO: Add better logging to script
 
@@ -123,7 +119,10 @@ then
 else
   echo "AWS Infrastructure already created..."
 
-  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": $awsLambdaVariables }
+  echo "All secrets"
+  echo "$ALLMYSECRETS"
+
+  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": $ALLMYSECRETS }
 fi
 
 rm aws.json
