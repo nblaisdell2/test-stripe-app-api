@@ -136,6 +136,8 @@ else
   echo "Items?"
   echo $items
 
+  set -xe
+
   aws lambda update-function-configuration --function-name $dockerContainerName --environment "{ \"Variables\": $items }"
 fi
 
