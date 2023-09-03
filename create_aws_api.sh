@@ -122,7 +122,7 @@ else
   items="{"  
   while read i; 
   do 
-    if [ $items == "{" ]; then
+    if [ "$items" == "{" ]; then
       item=$(echo "${i/ENV_/""}")    
     else
       item=$(echo ", ${i/ENV_/""}")
