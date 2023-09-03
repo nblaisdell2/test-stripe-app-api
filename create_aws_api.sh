@@ -10,6 +10,7 @@ awsLambdaExecRoleArn=$4
 awsGitHubRepoURL=$5
 awsAPIGatewayName=$3
 awsAPIGatewayDesc="$3 Description"
+awsLambdaVariables=$6
 
 # TODO: Add better logging to script
 
@@ -118,6 +119,8 @@ then
   echo https://$restApiID.execute-api.$awsRegion.amazonaws.com/dev
 else
   echo "AWS Infrastructure already created..."
+
+  aws lambda update-function-configuration --function-name $dockerContainerName --environment ''{ "Variables":  }''
 fi
 
 rm aws.json
