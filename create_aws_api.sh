@@ -129,6 +129,9 @@ else
     item=$(echo "${i/ENV_/""}")
     echo $item
     items+="$item"
+
+    echo "Items?"
+    echo $items
   done
   items+="}"
 
