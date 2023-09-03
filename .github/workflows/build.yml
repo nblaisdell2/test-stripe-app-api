@@ -34,14 +34,17 @@ jobs:
       - name: Testing Secrets
         run: |
           touch .env
-          echo "$ALLMYSECRETS" | jq -r 'to_entries[] | select(.key | startswith("ENV")) | "echo " + .key + "=" + .value + " >> .env"'
-          echo "Printing Environment file"
+
+          echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | .key + "=" + (.value|tojson)' |
+          while read i; 
+          do 
+            echo "${i/ENV_/""}" >> .env
+          done
+
           cat .env
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
-      - name: Did it work?
-        run: cat .env
       # - name: Populate Environment Variables
       #   run: |
       #     touch .env
