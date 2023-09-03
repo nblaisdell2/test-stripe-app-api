@@ -126,7 +126,12 @@ else
   
   while read i; 
   do 
-    item=$(echo "${i/ENV_/""}, ")
+    if [ $items == "{" ]; then
+      item=$(echo "${i/ENV_/""}")    
+    else
+      item=$(echo ", ${i/ENV_/""}")
+    fi
+        
     echo $item
     items+="$item"
   done <<< $(echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)')
