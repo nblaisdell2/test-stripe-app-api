@@ -62,7 +62,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_GHACTIONS_ROLENAME }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Create AWS Infrastructure
-        run: bash create_aws_api.sh ${{ secrets.AWS_ACCOUNT_ID }} ${{ secrets.AWS_REGION }} ${{ github.event.repository.name }} ${{ secrets.AWS_LAMBDA_EXEC_ARN }} ${{github.event.repository.clone_url }} ${{ toJSON(secrets) }}
+        run: bash create_aws_api.sh ${{ secrets.AWS_ACCOUNT_ID }} ${{ secrets.AWS_REGION }} ${{ github.event.repository.name }} ${{ secrets.AWS_LAMBDA_EXEC_ARN }} ${{github.event.repository.clone_url }} ${{ secrets }}
       # - name: Running AWS CodeBuild
       #   uses: aws-actions/aws-codebuild-run-build@v1.0.12
       #   with:
