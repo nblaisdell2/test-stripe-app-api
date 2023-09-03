@@ -120,7 +120,7 @@ then
 else
   echo "AWS Infrastructure already created..."
 
-  aws lambda update-function-configuration --function-name $dockerContainerName --environment ''{ "Variables": $6 }''
+  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": $awsLambdaVariables }
 fi
 
 rm aws.json
