@@ -123,7 +123,7 @@ else
   echo "$ALLMYSECRETS"
 
   items="{"
-  echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)' |
+  
   while read i; 
   do 
     item=$(echo "${i/ENV_/""}, ")
@@ -132,7 +132,8 @@ else
 
     echo "Items?"
     echo $items
-  done
+  done <<< $(echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)')
+
   items+="}"
 
   echo "Items?"
