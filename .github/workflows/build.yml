@@ -34,7 +34,7 @@ jobs:
       - name: Testing Secrets
         run: |
           echo "$ALLMYSECRETS"
-          echo "$ALLMYSECRETS" | jq -r .
+          echo "$ALLMYSECRETS" | jq -r '.[] | keys[]'
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
