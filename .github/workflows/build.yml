@@ -40,6 +40,8 @@ jobs:
         shell: bash
         env:
           ALLMYSECRETS: ${{ toJSON(secrets) }}
+      - name: Did it work?
+        run: cat .env
       # - name: Populate Environment Variables
       #   run: |
       #     touch .env
