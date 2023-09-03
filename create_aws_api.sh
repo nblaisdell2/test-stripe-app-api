@@ -127,6 +127,7 @@ else
   while read i; 
   do 
     item=$(echo "${i/ENV_/""}")
+    echo $item
     items+=$item
   done
   items+="}"
