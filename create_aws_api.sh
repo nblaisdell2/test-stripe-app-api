@@ -129,9 +129,6 @@ else
     item=$(echo "${i/ENV_/""}, ")
     echo $item
     items+="$item"
-
-    echo "Items?"
-    echo $items
   done <<< $(echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)')
 
   items+="}"
@@ -139,7 +136,7 @@ else
   echo "Items?"
   echo $items
 
-  aws lambda update-function-configuration --function-name $dockerContainerName --environment { "Variables": $items }
+  aws lambda update-function-configuration --function-name $dockerContainerName --environment "{ \"Variables\": $items }"
 fi
 
 rm aws.json
