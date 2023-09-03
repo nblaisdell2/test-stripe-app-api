@@ -33,6 +33,7 @@ jobs:
           cache: "npm"
       - name: Testing Secrets
         run: |
+          jq --help
           echo "$ALLMYSECRETS"
           echo "$ALLMYVARS"
         shell: bash
