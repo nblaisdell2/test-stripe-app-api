@@ -119,21 +119,21 @@ then
 else
   echo "AWS Infrastructure already created..."
 
-  items="{"  
-  while read i; 
-  do 
-    if [ "$items" == "{" ]; then
-      item=$(echo "${i/ENV_/""}")    
-    else
-      item=$(echo ", ${i/ENV_/""}")
-    fi
+  # items="{"  
+  # while read i; 
+  # do 
+  #   if [ "$items" == "{" ]; then
+  #     item=$(echo "${i/ENV_/""}")    
+  #   else
+  #     item=$(echo ", ${i/ENV_/""}")
+  #   fi
 
-    items+="$item"
-  done <<< $(echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)')
-  items+="}"
+  #   items+="$item"
+  # done <<< $(echo "$ALLMYSECRETS" | jq -r '. | to_entries[] | select(.key | startswith("ENV")) | (.key|tojson) + ": " + (.value|tojson)')
+  # items+="}"
 
-  echo "Updating Lambda Environment Variables"
-  aws lambda update-function-configuration --function-name $dockerContainerName --environment "{ \"Variables\": $items }"
+  # echo "Updating Lambda Environment Variables"
+  # aws lambda update-function-configuration --function-name $dockerContainerName --environment "{ \"Variables\": $items }"
 fi
 
 rm aws.json
